@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brooks West</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Work+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #fafaf8;
+            --color-text: #1a1a1a;
+            --color-text-secondary: #666666;
+            --color-accent: #2c5f4f;
+            --color-border: #e0e0dc;
+            --spacing-unit: 1.5rem;
+            --max-width: 800px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.7;
+            font-weight: 300;
+            font-size: 16px;
+        }
+
+        /* Password Gate */
+        #password-gate {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: var(--color-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+
+        #password-gate.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .password-container {
+            text-align: center;
+            max-width: 400px;
+            padding: 2rem;
+        }
+
+        .password-container h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .password-container p {
+            color: var(--color-text-secondary);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .password-input-group {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        #password-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: 1px solid var(--color-border);
+            background: white;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            outline: none;
+        }
+
+        #password-input:focus {
+            border-color: var(--color-accent);
+        }
+
+        #password-submit {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: var(--color-text);
+            color: white;
+            border: none;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-weight: 400;
+        }
+
+        #password-submit:hover {
+            background: var(--color-accent);
+        }
+
+        .error-message {
+            color: #c44536;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .error-message.show {
+            opacity: 1;
+        }
+
+        /* Main Content */
+        #main-content {
+            opacity: 0;
+            transition: opacity 0.8s ease 0.3s;
+        }
+
+        #main-content.visible {
+            opacity: 1;
+        }
+
+        header {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 4rem 2rem 3rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .header-content {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 4rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--color-text-secondary);
+            font-weight: 300;
+            margin-bottom: 2rem;
+        }
+
+        .contact-links {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .contact-links a {
+            color: var(--color-text);
+            text-decoration: none;
+            font-size: 0.95rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .contact-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--color-accent);
+            transition: width 0.3s ease;
+        }
+
+        .contact-links a:hover {
+            color: var(--color-accent);
+        }
+
+        .contact-links a:hover::after {
+            width: 100%;
+        }
+
+        main {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        section {
+            margin-bottom: 4rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 2rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60px;
+            height: 1px;
+            background: var(--color-accent);
+        }
+
+        .experience-item {
+            margin-bottom: 3rem;
+            padding-bottom: 3rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .experience-item:last-child {
+            border-bottom: none;
+        }
+
+        .experience-header {
+            margin-bottom: 1rem;
+        }
+
+        .company-name {
+            font-weight: 500;
+            font-size: 1.1rem;
+            color: var(--color-accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .role-title {
+            font-weight: 400;
+            font-size: 1.05rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .date-range {
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+            font-weight: 300;
+        }
+
+        .experience-description {
+            color: var(--color-text-secondary);
+            margin-top: 1rem;
+            line-height: 1.8;
+        }
+
+        .experience-description ul {
+            margin-top: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .experience-description li {
+            margin-bottom: 0.75rem;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .skill-category h3 {
+            font-family: 'Work Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.85rem;
+        }
+
+        .skill-category p {
+            color: var(--color-text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .education-item {
+            margin-bottom: 2rem;
+        }
+
+        .degree {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .institution {
+            color: var(--color-text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .additional-info {
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .project-showcase {
+            background: white;
+            border: 1px solid var(--color-border);
+            padding: 2rem;
+            margin-top: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .project-showcase:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .project-showcase h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+
+        .project-showcase p {
+            color: var(--color-text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .project-link {
+            display: inline-block;
+            color: var(--color-accent);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 400;
+            position: relative;
+            padding-bottom: 2px;
+        }
+
+        .project-link::after {
+            content: '→';
+            margin-left: 0.5rem;
+            transition: margin-left 0.3s ease;
+        }
+
+        .project-link:hover::after {
+            margin-left: 0.75rem;
+        }
+
+        footer {
+            max-width: var(--max-width);
+            margin: 4rem auto 2rem;
+            padding: 2rem;
+            text-align: center;
+            color: var(--color-text-secondary);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .contact-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                padding: 3rem 1.5rem 2rem;
+            }
+
+            main {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <!-- Password Gate -->
+    <div id="password-gate">
+        <div class="password-container">
+            <h1>Brooks West</h1>
+            <p>This portfolio is password protected. Please enter the access code to continue.</p>
+            <div class="password-input-group">
+                <input type="password" id="password-input" placeholder="Enter password" autocomplete="off">
+            </div>
+            <button id="password-submit">Enter</button>
+            <div class="error-message" id="error-message">Incorrect password. Please try again.</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content">
+        <header>
+            <div class="header-content">
+                <h1>Brooks West</h1>
+                <p class="subtitle">Senior Director, Marketing Technology & Operations</p>
+                <div class="contact-links">
+                    <a href="mailto:brooks.west@gmail.com">brooks.west@gmail.com</a>
+                    <a href="tel:+19522379522">952.237.9522</a>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section id="summary">
+                <h2>About</h2>
+                <p class="experience-description">
+                    Senior marketing technology and product leader focused on using platforms, data, and operations to drive growth in consumer health benefits. As head of Marketing Technology & Operations at Surest, I set the MarTech vision and integration strategy that enables personalized, measurable member engagement. I am driven by the challenge of simplifying complex systems and aligning product, data, and engineering teams around solutions that work for marketers, sales teams, and members.
+                </p>
+            </section>
+
+            <section id="experience">
+                <h2>Experience</h2>
+                
+                <div class="experience-item">
+                    <div class="experience-header">
+                        <div class="company-name">Surest, A UnitedHealthcare Company</div>
+                        <div class="role-title">Senior Director, Marketing Technology & Operations</div>
+                        <div class="date-range">2025 - Present</div>
+                    </div>
+                    <div class="experience-description">
+                        Tapped by the Surest marketing organization to build and scale the growth-oriented experimentation team and advance overall MarTech capabilities and operational excellence.
+                        <ul>
+                            <li>Lead Marketing Technology & Operations, setting the MarTech vision and roadmap for consumer and B2B experiences across digital, OE, and transactional communications.</li>
+                            <li>Own integration and automation strategy across marketing, sales, and core Surest/UHC systems, replacing manual processes with scalable, reliable integrations that improve data quality.</li>
+                            <li>Partner with marketing, analytics, and product to operationalize a customer data foundation that powers targeted messaging, triggers, and personalized journeys for members, pre-members, employers, and brokers.</li>
+                            <li>Provide governance, KPIs, and coaching for MarTech and integration environments, ensuring high availability, data integrity, and effective use of platforms and marketing, sales, and vendor teams.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="experience-item">
+                    <div class="experience-header">
+                        <div class="company-name">Surest, A UnitedHealthcare Company</div>
+                        <div class="role-title">Senior Director, Consumer Product</div>
+                        <div class="date-range">2017 - 2025</div>
+                    </div>
+                    <div class="experience-description">
+                        Built and led the Surest consumer product function through early-stage startup growth, multiple funding rounds, and acquisition by UnitedHealthcare in 2022.
+                        <ul>
+                            <li>Led a team responsible for designing and delivering the Surest consumer experience (web and mobile), establishing an industry-leading search capability and benchmark for member engagement and benefit navigation.</li>
+                            <li>Recruited and led a cross-functional group of product, design, and UX research team members accountable for roadmap planning and execution, working closely with engineering, data, and operations.</li>
+                            <li>Partnered with marketing, clinical, and operations teams to launch digital experiences that supported OE, benefit understanding, and engagement for member audiences.</li>
+                            <li>Collaborated with UHC and Optum technology teams post-acquisition to align Surest consumer capabilities with enterprise data platforms, integration patterns, and governance standards.</li>
+                            <li>Nominated and recognized in 2023 UnitedHealthcare Emerging Leaders Development Program.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="experience-item">
+                    <div class="experience-header">
+                        <div class="company-name">Delaget</div>
+                        <div class="role-title">Director of Product Management</div>
+                        <div class="date-range">2015 - 2017</div>
+                    </div>
+                    <div class="experience-description">
+                        Defined the multi-year product roadmap for a B2B SaaS data analytics platform serving enterprise clients.
+                        <ul>
+                            <li>Directed market research and opportunity assessment, initiating solution proposals and guiding program definition and product positioning for executive stakeholders and the board.</li>
+                            <li>Led cross-functional design and engineering efforts from concept through launch for multiple product features, with a focus on reporting, analytics, and operational insights.</li>
+                            <li>Forged product and distribution partnerships that expanded reach and contributed to revenue growth.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="experience-item">
+                    <div class="experience-header">
+                        <div class="company-name">Bloom Health</div>
+                        <div class="role-title">Product Manager</div>
+                        <div class="date-range">2013 - 2015</div>
+                    </div>
+                    <div class="experience-description">
+                        Managed consumer experience and applied machine learning and behavioral science for employee benefit decision support tool (acquired by Empyrean).
+                        <ul>
+                            <li>Product Owner for an agile scrum team of engineers and product analysts delivering on the flagship product roadmap.</li>
+                            <li>Launched a customer-facing machine learning capability that increased engagement by 24%, demonstrating the impact of advanced analytics on consumer behavior.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="experience-item">
+                    <div class="experience-header">
+                        <div class="company-name">SavvySherpa</div>
+                        <div class="role-title">Product Manager</div>
+                        <div class="date-range">2011 - 2013</div>
+                    </div>
+                    <div class="experience-description">
+                        Translated research insights into experiments and consumer pilots in the employee benefits and digital health space (acquired by UnitedHealthcare).
+                        <ul>
+                            <li>Guided cross-functional design efforts to define product features and product marketing.</li>
+                            <li>Contributed to design operational support models to scale a growing customer base.</li>
+                            <li>Partnered with technology teams across multiple geographies to meet milestones.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="experience-item">
+                    <div class="experience-header">
+                        <div class="company-name">Accenture</div>
+                        <div class="role-title">Consultant, Systems Integration</div>
+                        <div class="date-range">2006 - 2011</div>
+                    </div>
+                    <div class="experience-description">
+                        Advanced into a leadership role while designing and delivering software applications for healthcare and retail clients, building foundational experience in enterprise system implementations and change management.
+                    </div>
+                </div>
+            </section>
+
+            <section id="featured-work">
+                <h2>Featured Work</h2>
+                <div class="project-showcase">
+                    <h3>Surest Consumer Experience</h3>
+                    <p>Led the product team responsible for launching Surest's industry-leading consumer health benefits platform. The platform revolutionized how members understand and navigate their health benefits through intuitive search capabilities and personalized experiences.</p>
+                    <a href="https://vimeo.com/811344087" target="_blank" rel="noopener noreferrer" class="project-link">Watch product overview</a>
+                </div>
+            </section>
+
+            <section id="skills">
+                <h2>Expertise</h2>
+                <div class="skills-grid">
+                    <div class="skill-category">
+                        <h3>Marketing Technology</h3>
+                        <p>MarTech strategy and roadmap, marketing automation, CRM, customer data platforms, integrations and APIs, identity resolution, data governance</p>
+                    </div>
+                    <div class="skill-category">
+                        <h3>Growth & Enablement</h3>
+                        <p>Multi-channel campaigns, channel optimization, journey design, segmentation & targeting, digital activation, growth experimentation</p>
+                    </div>
+                    <div class="skill-category">
+                        <h3>Data & Analytics</h3>
+                        <p>Data warehouse concepts, SQL, Python, KPI design, experimentation, reporting and dashboarding, attribution modeling, marketing performance analytics</p>
+                    </div>
+                    <div class="skill-category">
+                        <h3>Leadership</h3>
+                        <p>Cross-functional team building, vendor management, product strategy and roadmap prioritization, stakeholder alignment, change management</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="education">
+                <h2>Education</h2>
+                <div class="education-item">
+                    <div class="degree">MS, Data Science</div>
+                    <div class="institution">Northwestern University</div>
+                    <div class="additional-info">External Advisory Board Member</div>
+                </div>
+                <div class="education-item">
+                    <div class="degree">BA, Computer Science</div>
+                    <div class="institution">Saint John's University</div>
+                    <div class="additional-info">External Advisory Board Member, Computer Science Department Teaching Assistant</div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Brooks West. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Password protection
+        const PASSWORD = 'surest2026'; // Change this to your desired password
+        const passwordGate = document.getElementById('password-gate');
+        const mainContent = document.getElementById('main-content');
+        const passwordInput = document.getElementById('password-input');
+        const passwordSubmit = document.getElementById('password-submit');
+        const errorMessage = document.getElementById('error-message');
+
+        // Check if user has already authenticated in this session
+        if (sessionStorage.getItem('authenticated') === 'true') {
+            unlockSite();
+        }
+
+        function checkPassword() {
+            if (passwordInput.value === PASSWORD) {
+                sessionStorage.setItem('authenticated', 'true');
+                unlockSite();
+            } else {
+                errorMessage.classList.add('show');
+                passwordInput.value = '';
+                passwordInput.focus();
+                setTimeout(() => {
+                    errorMessage.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        function unlockSite() {
+            passwordGate.classList.add('hidden');
+            setTimeout(() => {
+                mainContent.classList.add('visible');
+                initScrollAnimations();
+            }, 300);
+        }
+
+        passwordSubmit.addEventListener('click', checkPassword);
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        // Scroll animations
+        function initScrollAnimations() {
+            const sections = document.querySelectorAll('section');
+            
+            const observerOptions = {
+                threshold: 0.15,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        }
+    </script>
+</body>
+</html>
